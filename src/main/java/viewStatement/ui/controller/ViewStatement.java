@@ -9,7 +9,7 @@ import viewStatement.ui.model.ViewStatementResponse;
 public class ViewStatement {
 
     @PostMapping("/viewStatement")
-    public ViewStatementResponse[] viewStatement(@RequestBody ViewStatementRequest viewStatementRequest){
+    public <ViewStatementResponse[]> viewStatement(@RequestBody ViewStatementRequest viewStatementRequest){
 
         return null;
     }
