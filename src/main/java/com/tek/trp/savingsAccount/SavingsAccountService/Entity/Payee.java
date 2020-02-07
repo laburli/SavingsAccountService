@@ -1,45 +1,43 @@
 package com.tek.trp.savingsAccount.SavingsAccountService.Entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "payee")
 public class Payee {
 
     @Id
-    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "PayeeID")
     private int ID;
-    @Column(name = "customer_id")
     private int customerId;
-    @Column(name = "name")
     private String name;
-    @Column(name = "nickname")
     private String nickName;
-    @Column(name = "payee_bank_ifsc")
     private String payeeBankIFSC;
-    @Column(name = "payee_bank_address")
     private String payeeBankAddress;
-    @Column(name = "payee_bank_name")
     private String payeeBankName;
-    @Column(name = "payee_bank_city")
     private String payeeBankCity;
-    @Column(name = "account_number")
     private long accountNumber;
 
     public int getID() {
         return ID;
     }
 
-    //Just for initiation purpose
-    public Payee(int ID, int customerId, String name, long accountNumber) {
+    public Payee() {
+    }
+
+    public Payee(int ID, int customerId, String name, String nickName, String payeeBankIFSC, String payeeBankAddress, String payeeBankName, String payeeBankCity, long accountNumber) {
         this.ID = ID;
         this.customerId = customerId;
         this.name = name;
+        this.nickName = nickName;
+        this.payeeBankIFSC = payeeBankIFSC;
+        this.payeeBankAddress = payeeBankAddress;
+        this.payeeBankName = payeeBankName;
+        this.payeeBankCity = payeeBankCity;
         this.accountNumber = accountNumber;
     }
+
 
     public int getCustomerId() {
         return customerId;

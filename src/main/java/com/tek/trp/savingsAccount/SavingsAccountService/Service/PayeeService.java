@@ -1,4 +1,4 @@
-package com.tek.trp.savingsAccount.SavingsAccountService.service;
+package com.tek.trp.savingsAccount.SavingsAccountService.Service;
 
 import com.tek.trp.savingsAccount.SavingsAccountService.Entity.Payee;
 import com.tek.trp.savingsAccount.SavingsAccountService.Exception.PayeeNotFoundException;
@@ -12,4 +12,8 @@ public interface PayeeService {
     List<Payee> getAllPayeesByCustomerId(String id) throws PayeeNotFoundException;
 
     Payee addPayee(Payee payee);
+
+    Payee updatePayee(String id, Payee payee) throws PayeeNotFoundException;
+
+    void deletePayee(String id) throws PayeeNotFoundException;
 }
