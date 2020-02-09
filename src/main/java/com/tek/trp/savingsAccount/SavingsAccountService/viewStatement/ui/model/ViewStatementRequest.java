@@ -2,33 +2,18 @@ package com.tek.trp.savingsAccount.SavingsAccountService.viewStatement.ui.model;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class ViewStatementRequest {
 
     @NotNull(message = "Please provide Start Date")
-    private String startDate;
+    private LocalDateTime startDate;
 
     @NotNull(message = "Please provide End Date")
-    private String endDate;
+    private LocalDateTime endDate;
 
     @NotNull(message = "Please provide AccountNumber Date")
     private Double accountNumber;
-
-    public String getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(String startDate) {
-        this.startDate = startDate;
-    }
-
-    public String getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(String endDate) {
-        this.endDate = endDate;
-    }
 
     public Double getAccountNumber() {
         return accountNumber;
@@ -38,4 +23,28 @@ public class ViewStatementRequest {
         this.accountNumber = accountNumber;
     }
 
+    public LocalDateTime getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDateTime getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDateTime endDate) {
+        this.endDate = endDate;
+    }
+
+    @Override
+    public String toString() {
+        return "ViewStatementRequest{" +
+                "startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", accountNumber=" + accountNumber +
+                '}';
+    }
 }

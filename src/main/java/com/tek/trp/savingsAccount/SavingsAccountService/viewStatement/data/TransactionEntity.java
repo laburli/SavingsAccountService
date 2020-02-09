@@ -1,17 +1,20 @@
 package com.tek.trp.savingsAccount.SavingsAccountService.viewStatement.data;
 
 import com.sun.corba.se.spi.ior.ObjectId;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.annotation.Generated;
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name="transaction")
 public class TransactionEntity {
 
+    @DateTimeFormat(pattern = "MM-dd-yyyy")
     @Column(nullable = false)
-    private String transactionDate;
+    private LocalDateTime transactionDate;
 
     @Column(nullable = false)
     private Double accountNumber;
@@ -26,13 +29,6 @@ public class TransactionEntity {
     @Column
     private String location;
 
-    public String getTransactionDate() {
-        return transactionDate;
-    }
-
-    public void setTransactionDate(String transactionDate) {
-        this.transactionDate = transactionDate;
-    }
 
     public Double getAccountNumber() {
         return accountNumber;
@@ -56,5 +52,13 @@ public class TransactionEntity {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public LocalDateTime getTransactionDate() {
+        return transactionDate;
+    }
+
+    public void setTransactionDate(LocalDateTime transactionDate) {
+        this.transactionDate = transactionDate;
     }
 }

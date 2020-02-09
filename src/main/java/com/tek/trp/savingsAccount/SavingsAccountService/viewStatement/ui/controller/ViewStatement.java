@@ -8,9 +8,17 @@ import com.tek.trp.savingsAccount.SavingsAccountService.viewStatement.ui.model.V
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.List;
 import java.util.Random;
 
 @RestController
@@ -43,16 +51,20 @@ public class ViewStatement {
                 sb.append(c);}
                 createStatementRequest.setLocation(sb.toString());
         }
+
+        DateTimeFormatter shortDateTime =  DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
+
+        DateTimeFormatter f = DateTimeFormatter.ofPattern("MMddyyyy");
+        LocalDateTime date = LocalDateTime.of(LocalDate.parse(createStatementRequest.getDate(),f), LocalTime.now());
+        createStatementRequest.setTransactionDate( date);
         TransactionDto transactionDto = modelMapper.map(createStatementRequest,TransactionDto.class);
         transactionService.addNewTransaction(transactionDto);
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
     @GetMapping("/viewStatement")
-    public ResponseEntity<ViewStatementResponse[]> viewStatements(@RequestBody ViewStatementRequest viewStatementRequest){
+    public List<ViewStatementResponse> viewStatements(@RequestBody ViewStatementRequest viewStatementRequest){
 
-        ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        return new ResponseEntity(HttpStatus.CREATED);
+     return transactionService.getStatement(viewStatementRequest);
     }
 }

@@ -1,11 +1,30 @@
 package com.tek.trp.savingsAccount.SavingsAccountService.viewStatement.ui.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class ViewStatementResponse {
+
     private String location;
     private double amount;
-    private String transactionDate;
+    private LocalDateTime transactionDate;
+
+    public ViewStatementResponse() {
+    }
+
+    public ViewStatementResponse(String location, double amount, LocalDateTime transactionDate) {
+        this.location = location;
+        this.amount = amount;
+        this.transactionDate = transactionDate;
+    }
+
+    public LocalDateTime getTransactionDate() {
+        return transactionDate;
+    }
+
+    public void setTransactionDate(LocalDateTime transactionDate) {
+        this.transactionDate = transactionDate;
+    }
 
     public String getLocation() {
         return location;
@@ -23,11 +42,5 @@ public class ViewStatementResponse {
         this.amount = amount;
     }
 
-    public String getTransactionDate() {
-        return transactionDate;
-    }
 
-    public void setTransactionDate(String transactionDate) {
-        this.transactionDate = transactionDate;
-    }
 }

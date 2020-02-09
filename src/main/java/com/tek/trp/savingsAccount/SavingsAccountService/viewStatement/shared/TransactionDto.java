@@ -2,9 +2,10 @@ package com.tek.trp.savingsAccount.SavingsAccountService.viewStatement.shared;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class TransactionDto {
-    private String transactionDate;
+    private LocalDateTime transactionDate;
 
     @NotNull(message = "Please provide AccountNumber Date")
     private Double accountNumber;
@@ -15,11 +16,11 @@ public class TransactionDto {
     @NotNull(message = "Please provide End Date")
     private String location;
 
-    public String getTransactionDate() {
+    public LocalDateTime getTransactionDate() {
         return transactionDate;
     }
 
-    public void setTransactionDate(String transactionDate) {
+    public void setTransactionDate(LocalDateTime transactionDate) {
         this.transactionDate = transactionDate;
     }
 
