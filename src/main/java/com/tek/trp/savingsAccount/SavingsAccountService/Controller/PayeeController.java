@@ -1,5 +1,6 @@
 package com.tek.trp.savingsAccount.SavingsAccountService.Controller;
 
+import com.tek.trp.savingsAccount.SavingsAccountService.Customer.CustNotFoundException;
 import com.tek.trp.savingsAccount.SavingsAccountService.Entity.Payee;
 import com.tek.trp.savingsAccount.SavingsAccountService.Exception.PayeeNotFoundException;
 import com.tek.trp.savingsAccount.SavingsAccountService.Service.PayeeService;
@@ -18,23 +19,23 @@ public class PayeeController {
     PayeeService payeeService;
 
     @PostMapping("/")
-    public ResponseEntity<Payee> savePayee(@RequestBody Payee payee) {
+    public ResponseEntity<Payee> savePayee(@RequestBody Payee payee) throws CustNotFoundException {
         return ResponseEntity.ok(payeeService.addPayee(payee));
     }
 
     @GetMapping("/{cid}")
-    public List<Payee> getAllPayeesByCustomerId(@PathVariable String cid) throws PayeeNotFoundException {
-        return payeeService.getAllPayeesByCustomerId(cid);
+    public ResponseEntity<List<Payee>> getAllPayeesByCustomerId(@PathVariable int cid) throws PayeeNotFoundException, CustNotFoundException {
+        return ResponseEntity.ok(payeeService.getAllPayeesByCustomerId(cid));
     }
 
     @DeleteMapping("/{id}")
-    public HttpStatus deleteProduct(@PathVariable String id) throws PayeeNotFoundException {
+    public HttpStatus deleteProduct(@PathVariable int id) throws PayeeNotFoundException {
         this.payeeService.deletePayee(id);
         return HttpStatus.OK;
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Payee> updatePayee(@PathVariable("id") String id, @RequestBody Payee payee) throws PayeeNotFoundException {
+    public ResponseEntity<Payee> updatePayee(@PathVariable("id") int id, @RequestBody Payee payee) throws PayeeNotFoundException {
         return ResponseEntity.ok(payeeService.updatePayee(id, payee));
 
     }

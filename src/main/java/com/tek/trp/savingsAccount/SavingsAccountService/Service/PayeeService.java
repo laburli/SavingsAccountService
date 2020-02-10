@@ -1,19 +1,18 @@
 package com.tek.trp.savingsAccount.SavingsAccountService.Service;
 
+import com.tek.trp.savingsAccount.SavingsAccountService.Customer.CustNotFoundException;
 import com.tek.trp.savingsAccount.SavingsAccountService.Entity.Payee;
 import com.tek.trp.savingsAccount.SavingsAccountService.Exception.PayeeNotFoundException;
-import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
 public interface PayeeService {
 
-    @Query()
-    List<Payee> getAllPayeesByCustomerId(String id) throws PayeeNotFoundException;
+    List<Payee> getAllPayeesByCustomerId(int cid) throws PayeeNotFoundException, CustNotFoundException;
 
-    Payee addPayee(Payee payee);
+    Payee addPayee(Payee payee) throws CustNotFoundException;
 
-    Payee updatePayee(String id, Payee payee) throws PayeeNotFoundException;
+    Payee updatePayee(int id, Payee payee) throws PayeeNotFoundException;
 
-    void deletePayee(String id) throws PayeeNotFoundException;
+    void deletePayee(int id) throws PayeeNotFoundException;
 }

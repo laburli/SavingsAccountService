@@ -10,6 +10,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Optional;
 
+import static org.junit.Assert.assertEquals;
+
 @RunWith(SpringRunner.class)
 @DataJpaTest
 public class PayeeDaoTest {
@@ -28,10 +30,20 @@ public class PayeeDaoTest {
     public void testSavePayee() {
         Payee payee = getMockPayee();
         Payee savedInDb = testEntityManager.persist(payee);
-        Optional<Payee> getFromDb = payeeDao.findById(String.valueOf(savedInDb.getID()));
+        Optional<Payee> getFromDb = payeeDao.findById(savedInDb.getPayeeId());
 
         if (getFromDb.isPresent())
-            assert (getFromDb.get()).equals(payee);
+            assertEquals(getFromDb.get(), payee);
 
     }
+
+    @Test
+    public void testFindByCustomerId() {
+        Payee payee = getMockPayee();
+        //Payee savedInDb = testEntityManager.persist(payee);
+        //List<Payee> getFromDb = payeeDao.findByCustomerId(savedInDb.getCustomerId());
+        //assert(getFromDb.contains(payee));
+    }
+
+
 }

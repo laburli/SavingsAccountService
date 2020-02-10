@@ -5,6 +5,7 @@ import com.tek.trp.savingsAccount.SavingsAccountService.Customer.Customer;
 import com.tek.trp.savingsAccount.SavingsAccountService.DAO.PayeeDao;
 import com.tek.trp.savingsAccount.SavingsAccountService.Entity.Payee;
 import com.tek.trp.savingsAccount.SavingsAccountService.Exception.PayeeNotFoundException;
+import com.tek.trp.savingsAccount.SavingsAccountService.Utilities.ExceptionToJson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,66 +13,67 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class PayeeServiceImpl {
+public class PayeeServiceImpl implements PayeeService {
+
     @Autowired
     PayeeDao payeeDao;
 
-    private static String payeeNotFoundMessage = "Can't Find Any Payee with id : ";
+    private static String payeeNotFoundMessage = "Can't Find Any Payee with this Payee ID !";
 
     void initiate() {
-        payeeDao.save(new Payee(1234, 5433, "Ashish Ranjan", "ashish", "", "", "", "", 8777777L));
-        payeeDao.save(new Payee(1235, 5433, "Kashish Mehta", "kashish", "", "", "", "", 8777777L));
-        payeeDao.save(new Payee(1236, 5444, "Ashish Raj", "ashish", "", "", "", "", 8777855L));
-        payeeDao.save(new Payee(1237, 5444, "Rajvardhan Rathore", "raj", "", "", "", "", 8777855L));
-        payeeDao.save(new Payee(1238, 5454, "Anubhav Sinha", "anubhav", "", "", "", "", 8777978L));
+        payeeDao.save(new Payee(1234, 5433, "Ashish Ranjan", "ashish", "SBIN0010102", "Madhapur", "State Bank Of India", "Hyderabad ", 8777777L));
+        payeeDao.save(new Payee(1235, 5433, "Kashish Mehta", "kashish", "HDFC0000512", "Raj Bhavan Road", "HDFC Bank", "Hyderabad ", 8777777L));
+        payeeDao.save(new Payee(1236, 5444, "Ashish Raj", "ashish", "HDFC0000512", "Raj Bhavan Road", "HDFC Bank", "Hyderabad ", 8777855L));
+        payeeDao.save(new Payee(1237, 5444, "Rajvardhan Rathore", "raj", "SBIN0010102", "Madhapur", "State Bank Of India", "Hyderabad ", 8777855L));
+        payeeDao.save(new Payee(1238, 5454, "Anubhav Sinha", "anubhav", "SBIN0010102", "Madhapur", "State Bank Of India", "Hyderabad ", 8777978L));
     }
 
 
-    public List<Payee> getAllPayeesByCustomerId(String cid) throws PayeeNotFoundException, CustNotFoundException {
+    public List<Payee> getAllPayeesByCustomerId(int cid) throws PayeeNotFoundException, CustNotFoundException {
         //For the First Time only
         //initiate();
 
-        if (!Customer.doesCustomerExist(cid)) {
-            return null;
-        }
+//        if (!Customer.doesCustomerExist(cid)) {
+//            return null;
+//        }
 
         List<Payee> payeeList;
         try {
-            List<Payee> pl = payeeDao.findAllPayeesByCustomerId(cid);
-            if (pl != null)
+            List<Payee> pl = payeeDao.findByCustomerId(cid);
+            if (pl.size() != 0)
                 payeeList = pl;
             else
-                throw new PayeeNotFoundException("There is no payee associated with your Customer Id : " + cid);
+                throw new PayeeNotFoundException(ExceptionToJson.exceptionToJsonConverter(cid, "There is no payee associated with your Customer Id  "));
 
         } catch (Exception e) {
-            throw new PayeeNotFoundException("Payee Could not be found. Please Try again Later!");
+            throw new PayeeNotFoundException(ExceptionToJson.exceptionToJsonConverter(cid, "Payee Could not be found. Please Try again Later!"));
         }
         return payeeList;
     }
 
     public Payee addPayee(Payee payee) throws CustNotFoundException {
-        if (!Customer.doesCustomerExist(String.valueOf(payee.getCustomerId())))
+        if (!Customer.doesCustomerExist(payee.getCustomerId()))
             return null;
 
         payeeDao.save(payee);
-        return payeeDao.findById(String.valueOf(payee.getID())).get();
+        return payeeDao.findById(payee.getPayeeId()).get();
     }
 
-    Payee updatePayee(String id, Payee requestPayee) throws PayeeNotFoundException {
-        Payee payee = payeeDao.findById(id).orElseThrow(() -> new PayeeNotFoundException(payeeNotFoundMessage + id));
-        if (!(requestPayee.getID() == Integer.parseInt(id)))
-            throw new PayeeNotFoundException(payeeNotFoundMessage + id);
+    public Payee updatePayee(int id, Payee requestPayee) throws PayeeNotFoundException {
+        Payee payee = payeeDao.findById(id).orElseThrow(() -> new PayeeNotFoundException(ExceptionToJson.exceptionToJsonConverter(id, payeeNotFoundMessage)));
+        if (!(requestPayee.getPayeeId() == id))
+            throw new PayeeNotFoundException(ExceptionToJson.exceptionToJsonConverter(id, payeeNotFoundMessage));
 
-        payeeDao.save(payee);
-        return payeeDao.findById(String.valueOf(payee.getID())).get();
+        payeeDao.save(requestPayee);
+        return payeeDao.findById((payee.getPayeeId())).get();
     }
 
-    public void deletePayee(String id) throws PayeeNotFoundException {
+    public void deletePayee(int id) throws PayeeNotFoundException {
         Optional<Payee> payee = payeeDao.findById(id);
         if (payee.isPresent()) {
             payeeDao.delete(payee.get());
         } else {
-            throw new PayeeNotFoundException(payeeNotFoundMessage + id);
+            throw new PayeeNotFoundException(ExceptionToJson.exceptionToJsonConverter(id, payeeNotFoundMessage));
         }
     }
 }

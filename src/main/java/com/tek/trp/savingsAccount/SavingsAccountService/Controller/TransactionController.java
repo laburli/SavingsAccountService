@@ -21,18 +21,18 @@ public class TransactionController {
     TransactionService transactionService;
 
     @PostMapping("/")
-    public Transaction saveNewTransaction(@RequestBody Transaction transaction) throws IncompleteTransactionException, PayeeNotFoundException {
+    public Transaction saveNewTransaction(@RequestBody Transaction transaction) throws IncompleteTransactionException, PayeeNotFoundException, CustNotFoundException {
         return transactionService.addTransaction(transaction);
     }
 
     @GetMapping("/{id}")
-    public List<Transaction> getAllTransactionsByCustomerId(@PathVariable String id) throws CustNotFoundException, TransactionNotFoundException {
+    public List<Transaction> getAllTransactionsByCustomerId(@PathVariable int id) throws CustNotFoundException, TransactionNotFoundException {
         return transactionService.findAllTransactionsByCustomerId(id);
     }
 
     //expects /transaction?tid = .....
     @GetMapping("/")
-    public Transaction getTransactionByTransactionId(@RequestParam String tid) throws TransactionNotFoundException {
+    public Transaction getTransactionByTransactionId(@RequestParam int tid) throws TransactionNotFoundException {
         return transactionService.findTransactionByTransactionId(tid);
     }
 }
