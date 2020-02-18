@@ -1,16 +1,14 @@
 package com.tek.trp.savingsAccount.SavingsAccountService.Service;
 
-import com.tek.trp.savingsAccount.SavingsAccountService.Customer.CustNotFoundException;
-import com.tek.trp.savingsAccount.SavingsAccountService.Customer.Customer;
 import com.tek.trp.savingsAccount.SavingsAccountService.DAO.TransactionDao;
 import com.tek.trp.savingsAccount.SavingsAccountService.Entity.Payee;
 import com.tek.trp.savingsAccount.SavingsAccountService.Entity.Transaction;
+import com.tek.trp.savingsAccount.SavingsAccountService.Exception.CustNotFoundException;
 import com.tek.trp.savingsAccount.SavingsAccountService.Exception.IncompleteTransactionException;
 import com.tek.trp.savingsAccount.SavingsAccountService.Exception.PayeeNotFoundException;
 import com.tek.trp.savingsAccount.SavingsAccountService.Exception.TransactionNotFoundException;
 import com.tek.trp.savingsAccount.SavingsAccountService.Utilities.ExceptionUtils;
-import com.tek.trp.savingsAccount.SavingsAccountService.request.ViewCreditDebitRequest;
-import com.tek.trp.savingsAccount.SavingsAccountService.request.ViewCreditDebitSumResponse;
+import com.tek.trp.savingsAccount.SavingsAccountService.Utilities.creditDebitRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,10 +29,10 @@ public class TransactionServiceImpl implements TransactionService {
     PayeeService payeeService;
 
     public List<Transaction> findAllTransactionsByCustomerId(int cid) throws TransactionNotFoundException, CustNotFoundException {
-        if (!Customer.doesCustomerExist(cid)) {
-            return null;
+        List<Transaction> Customer = transactionDao.findByCustomerId(cid);
+        if (Customer.isEmpty()) {
+            throw new CustNotFoundException(ExceptionUtils.exceptionToJsonConverter(cid, "There is no Customer with this id."));
         }
-
         List<Transaction> transactionList;
         List<Transaction> tl = transactionDao.findByCustomerId(cid);
         if (tl.size() != 0)
@@ -55,14 +53,32 @@ public class TransactionServiceImpl implements TransactionService {
         }
     }
 
+    public List<Transaction> findTransactionsByCustomerIdAndPayeeId(int cid, int pid) throws TransactionNotFoundException, CustNotFoundException, PayeeNotFoundException {
+        List<Transaction> customer = transactionDao.findByCustomerId(cid);
+        if (customer.isEmpty()) {
+            throw new CustNotFoundException(ExceptionUtils.exceptionToJsonConverter(cid, "There is no Customer with this id."));
+        }
+        List<Transaction> payee = transactionDao.findByPayeeId(pid);
+        if (payee.isEmpty()) {
+            throw new PayeeNotFoundException(ExceptionUtils.exceptionToJsonConverter(pid, "There is no Payee with this Payee Id"));
+        }
+
+        List<Transaction> transactionList = transactionDao.findByCustomerIdAndPayeeId(cid, pid);
+        if (transactionList.isEmpty()) {
+            throw new TransactionNotFoundException(ExceptionUtils.exceptionToJsonConverter(cid, "There is no Transaction associated with your Customer Id & Payee Id"));
+        }
+        return transactionList;
+    }
+
     public Transaction addTransaction(Transaction transaction) throws IncompleteTransactionException, PayeeNotFoundException, CustNotFoundException {
 
         int payeeId = transaction.getPayeeId();
         int cid = transaction.getCustomerId();
 
-//        if (!Customer.doesCustomerExist(cid)) {
-//            return null;
-//        }
+        List<Transaction> Customer = transactionDao.findByCustomerId(cid);
+        if (Customer.isEmpty()) {
+            throw new CustNotFoundException(ExceptionUtils.exceptionToJsonConverter(cid, "There is no Customer with this id."));
+        }
 
         List<Payee> payee = payeeService.getAllPayeesByCustomerId(transaction.getCustomerId());
         Payee p = payee.stream()
@@ -76,6 +92,10 @@ public class TransactionServiceImpl implements TransactionService {
 
         double txnAmt = transaction.getTransactionAmount();
         double avlBal = transaction.getAvailableBalance();
+
+        if (avlBal < 1000) {
+            throw new IncompleteTransactionException(ExceptionUtils.exceptionToJsonConverter(cid, "Avaliable Balance is less than Rs 1000"));
+        }
 
         //Checking Low Balance Exception Condition
         if (transaction.getTransactionType().toLowerCase().trim().equals("debit")) {
@@ -94,30 +114,27 @@ public class TransactionServiceImpl implements TransactionService {
         return transactionDao.findById(transaction.getTransactionId()).get();
     }
 
-    public ViewCreditDebitSumResponse CalculateSum(ViewCreditDebitRequest viewCreditDebitRequest) throws CustNotFoundException {
-        int id = viewCreditDebitRequest.getCustomerId();
-        String startDate = String.valueOf(viewCreditDebitRequest.getStartDate());
-        String endDate = String.valueOf(viewCreditDebitRequest.getEndDate());
+    public String CalculateSum(creditDebitRequestDTO creditDebitRequestDTO) throws CustNotFoundException {
+        int id = creditDebitRequestDTO.getCustomerId();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        LocalDateTime startDate = LocalDate.parse(String.valueOf(creditDebitRequestDTO.getStartDate()), formatter).atStartOfDay();
+        LocalDateTime endDate = LocalDate.parse(String.valueOf(creditDebitRequestDTO.getEndDate()), formatter).atStartOfDay();
+
         List<Transaction> Customer = transactionDao.findByCustomerId(id);
         if (Customer.isEmpty()) {
             throw new CustNotFoundException(ExceptionUtils.exceptionToJsonConverter(id, "There is no customer with this id"));
         } else {
-            ViewCreditDebitSumResponse viewCreditDebitSumResponse = new ViewCreditDebitSumResponse();
 
-            int debitsum = DebitSum(id, startDate, endDate, "debit");
-            int creditsum = CreditSum(id, startDate, endDate, "credit");
-            viewCreditDebitSumResponse.setDebitsum(debitsum);
-            viewCreditDebitSumResponse.setCreditsum(creditsum);
-            return viewCreditDebitSumResponse;
+            int debitsum = DebitSum(id, startDate, endDate, "Debit");
+            int creditsum = CreditSum(id, startDate, endDate, "Credit");
+            String response = "{\"customerId\" : " + id + ",\"debitSum\" : " + debitsum + ",\"creditSum\" : " + creditsum + "}";
+            return response;
         }
     }
 
-    private int CreditSum(int id, String startdate, String enddate, String transactiontype) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        LocalDateTime start = LocalDate.parse(startdate, formatter).atStartOfDay();
-        LocalDateTime end = LocalDate.parse(enddate, formatter).atStartOfDay();
+    private int CreditSum(int id, LocalDateTime start, LocalDateTime end, String transactiontype) {
         try {
-            return transactionDao.sumByDatesBetween(id, start, end, transactiontype);
+            return transactionDao.sumByDatesBetween(id, transactiontype, start, end);
         } catch (Exception e) {
             return 0;
         }
@@ -125,12 +142,9 @@ public class TransactionServiceImpl implements TransactionService {
 
     }
 
-    private int DebitSum(int id, String startdate, String enddate, String transactiontype) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        LocalDateTime start = LocalDate.parse(startdate, formatter).atStartOfDay();
-        LocalDateTime end = LocalDate.parse(enddate, formatter).atStartOfDay();
+    private int DebitSum(int id, LocalDateTime start, LocalDateTime end, String transactiontype) {
         try {
-            return transactionDao.sumByDatesBetween(id, start, end, transactiontype);
+            return transactionDao.sumByDatesBetween(id, transactiontype, start, end);
         } catch (Exception e) {
             return 0;
         }
@@ -138,27 +152,26 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<Transaction> getStatement(ViewCreditDebitRequest viewCreditDebitRequest) throws CustNotFoundException, TransactionNotFoundException {
+    public List<Transaction> getStatement(creditDebitRequestDTO creditDebitRequestDTO) throws CustNotFoundException, TransactionNotFoundException {
 
-        long no = Duration.between(viewCreditDebitRequest.getStartDate(), viewCreditDebitRequest.getEndDate()).toDays();
-        if (no >= 180) {
-            throw new TransactionNotFoundException("you can see ViewStatement of last 6 months only");
-        }
-
-        int id = viewCreditDebitRequest.getCustomerId();
-        LocalDateTime startDate = viewCreditDebitRequest.getStartDate();
-        LocalDateTime endDate = viewCreditDebitRequest.getEndDate().plusDays(1);
-
-        Transaction entity = new Transaction();
+        int id = creditDebitRequestDTO.getCustomerId();
+        LocalDateTime startDate = creditDebitRequestDTO.getStartDate();
+        LocalDateTime endDate = creditDebitRequestDTO.getEndDate().plusDays(1);
 
         List<Transaction> customer = transactionDao.findByCustomerId(id);
 
         if (customer.isEmpty()) {
             throw new CustNotFoundException(ExceptionUtils.exceptionToJsonConverter(id, "There is no customer with this id"));
         } else {
+
             List<Transaction> transactionList = transactionDao.getViewStatement(id, startDate, endDate);
             if (transactionList.isEmpty()) {
                 throw new TransactionNotFoundException(ExceptionUtils.exceptionToJsonConverter(id, "There is no Transaction associated with your Customer Id "));
+            }
+
+            long no = Duration.between(startDate, endDate).toDays();
+            if (no >= 180) {
+                throw new TransactionNotFoundException("You can see ViewStatement of last 6 months only");
             }
             return transactionList;
         }

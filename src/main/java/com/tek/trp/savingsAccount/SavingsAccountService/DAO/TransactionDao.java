@@ -13,10 +13,15 @@ public interface TransactionDao extends JpaRepository<Transaction, Integer> {
 
     List<Transaction> findByCustomerId(int customerId);
 
-    @Query(value = "SELECT t FROM transaction t WHERE t.customerId= :customerId and t.transactionTime between :startDate  and :endDate")
+    List<Transaction> findByPayeeId(int payeeId);
+
+    @Query(value = "SELECT t FROM transaction t WHERE t.customerId= :customerId and t.payeeId= :payeeId", nativeQuery = true)
+    List<Transaction> findByCustomerIdAndPayeeId(int customerId, int payeeId);
+
+    @Query(value = "SELECT t FROM transaction t WHERE t.customerId= :customerId and t.transactionTime between :startDate  and :endDate", nativeQuery = true)
     List<Transaction> getViewStatement(int customerId, LocalDateTime startDate, LocalDateTime endDate);
 
-    @Query("SELECT sum(transactionAmount) from transaction where customerId=:customerId and transactionType=:transactiontype and transactionTime between :start and :end")
-    Integer sumByDatesBetween(int customerId, LocalDateTime start, LocalDateTime end, String transactiontype);
+    @Query(value = "SELECT sum(transactionAmount) from transaction where customerId=:customerId and transactionType=:transactionType and transactionTime between :startDate and :endDate", nativeQuery = true)
+    Integer sumByDatesBetween(int customerId, String transactionType, LocalDateTime startDate, LocalDateTime endDate);
 
 }

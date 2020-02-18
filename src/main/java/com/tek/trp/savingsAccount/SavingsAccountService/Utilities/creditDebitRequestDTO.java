@@ -1,9 +1,9 @@
-package com.tek.trp.savingsAccount.SavingsAccountService.RequestResponse;
+package com.tek.trp.savingsAccount.SavingsAccountService.Utilities;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-public class ViewCreditDebitRequest {
+public class creditDebitRequestDTO {
     @NotNull(message = "Please provide Start Date")
     private LocalDateTime startDate;
     @NotNull(message = "Please provide End Date")

@@ -1,4 +1,4 @@
-package com.tek.trp.savingsAccount.SavingsAccountService.Customer;
+package com.tek.trp.savingsAccount.SavingsAccountService.Exception;
 
 public class CustNotFoundException extends Exception {
 

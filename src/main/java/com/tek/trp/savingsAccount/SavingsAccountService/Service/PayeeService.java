@@ -1,12 +1,14 @@
 package com.tek.trp.savingsAccount.SavingsAccountService.Service;
 
-import com.tek.trp.savingsAccount.SavingsAccountService.Customer.CustNotFoundException;
 import com.tek.trp.savingsAccount.SavingsAccountService.Entity.Payee;
+import com.tek.trp.savingsAccount.SavingsAccountService.Exception.CustNotFoundException;
 import com.tek.trp.savingsAccount.SavingsAccountService.Exception.PayeeNotFoundException;
 
 import java.util.List;
 
 public interface PayeeService {
+
+    Payee getPayeeByPayeeId(int pid) throws PayeeNotFoundException;
 
     List<Payee> getAllPayeesByCustomerId(int cid) throws PayeeNotFoundException, CustNotFoundException;
 

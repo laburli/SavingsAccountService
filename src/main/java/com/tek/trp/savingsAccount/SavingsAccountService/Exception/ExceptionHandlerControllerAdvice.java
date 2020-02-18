@@ -1,6 +1,5 @@
 package com.tek.trp.savingsAccount.SavingsAccountService.Exception;
 
-import com.tek.trp.savingsAccount.SavingsAccountService.Customer.CustNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

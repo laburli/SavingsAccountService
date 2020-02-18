@@ -1,7 +1,7 @@
 package com.tek.trp.savingsAccount.SavingsAccountService.Controller;
 
-import com.tek.trp.savingsAccount.SavingsAccountService.Customer.CustNotFoundException;
 import com.tek.trp.savingsAccount.SavingsAccountService.Entity.Payee;
+import com.tek.trp.savingsAccount.SavingsAccountService.Exception.CustNotFoundException;
 import com.tek.trp.savingsAccount.SavingsAccountService.Exception.PayeeNotFoundException;
 import com.tek.trp.savingsAccount.SavingsAccountService.Service.PayeeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +20,11 @@ public class PayeeController {
     @PostMapping("/")
     public Payee savePayee(@RequestBody Payee payee) throws CustNotFoundException {
         return payeeService.addPayee(payee);
+    }
+
+    @GetMapping("/")
+    public Payee getPayeeByPayeeId(@RequestParam int pid) throws PayeeNotFoundException {
+        return payeeService.getPayeeByPayeeId(pid);
     }
 
     @GetMapping("/{cid}")
