@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.time.format.DateTimeParseException;
+
 @ControllerAdvice
 public class ExceptionHandlerControllerAdvice {
 
@@ -27,6 +29,12 @@ public class ExceptionHandlerControllerAdvice {
     @ExceptionHandler(value = CustNotFoundException.class)
     public ResponseEntity<Object> exceptionCNFE(CustNotFoundException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DateTimeParseException.class)
+    public ResponseEntity<Object> handleDateTimeException(final DateTimeParseException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+        //error.setErrorMessage("Wrong Date Format! Please Try Again! ");
     }
 
 }

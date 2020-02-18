@@ -7,7 +7,6 @@ import com.tek.trp.savingsAccount.SavingsAccountService.Service.PayeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,13 +18,13 @@ public class PayeeController {
     PayeeService payeeService;
 
     @PostMapping("/")
-    public ResponseEntity<Payee> savePayee(@RequestBody Payee payee) throws CustNotFoundException {
-        return ResponseEntity.ok(payeeService.addPayee(payee));
+    public Payee savePayee(@RequestBody Payee payee) throws CustNotFoundException {
+        return payeeService.addPayee(payee);
     }
 
     @GetMapping("/{cid}")
-    public ResponseEntity<List<Payee>> getAllPayeesByCustomerId(@PathVariable int cid) throws PayeeNotFoundException, CustNotFoundException {
-        return ResponseEntity.ok(payeeService.getAllPayeesByCustomerId(cid));
+    public List<Payee> getAllPayeesByCustomerId(@PathVariable int cid) throws PayeeNotFoundException, CustNotFoundException {
+        return payeeService.getAllPayeesByCustomerId(cid);
     }
 
     @DeleteMapping("/{id}")
@@ -35,8 +34,8 @@ public class PayeeController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Payee> updatePayee(@PathVariable("id") int id, @RequestBody Payee payee) throws PayeeNotFoundException {
-        return ResponseEntity.ok(payeeService.updatePayee(id, payee));
+    public Payee updatePayee(@PathVariable("id") int id, @RequestBody Payee payee) throws PayeeNotFoundException {
+        return payeeService.updatePayee(id, payee);
 
     }
 

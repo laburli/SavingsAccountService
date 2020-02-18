@@ -1,7 +1,7 @@
 package com.tek.trp.savingsAccount.SavingsAccountService.Entity;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "transaction")
@@ -44,10 +44,13 @@ public class Transaction {
     @Column(name = "payeeBankAddress")
     private String payeeBankAddress;
     @Column(name = "transactionTime")
-    @Temporal(TemporalType.DATE)
-    private Date transactionTime;
+    private LocalDateTime transactionTime;
 
-    public Transaction(int transactionId, String transactionType, double availableBalance, double transactionAmount, long customerAccountNumber, int customerId, String customerName, String customerBranch, String customerBank, String customerIFSC, String customerBankAddress, String payeeName, int payeeId, long payeeAccountNumber, String payeeBankName, String payeeBankIFSC, String payeeBankAddress, Date transactionTime) {
+    public Transaction() {
+
+    }
+
+    public Transaction(int transactionId, String transactionType, double availableBalance, double transactionAmount, long customerAccountNumber, int customerId, String customerName, String customerBranch, String customerBank, String customerIFSC, String customerBankAddress, String payeeName, int payeeId, long payeeAccountNumber, String payeeBankName, String payeeBankIFSC, String payeeBankAddress, LocalDateTime transactionTime) {
         this.transactionId = transactionId;
         this.transactionType = transactionType;
         this.availableBalance = availableBalance;
@@ -136,7 +139,7 @@ public class Transaction {
         return payeeBankAddress;
     }
 
-    public Date getTransactionTime() {
+    public LocalDateTime getTransactionTime() {
         return transactionTime;
     }
 

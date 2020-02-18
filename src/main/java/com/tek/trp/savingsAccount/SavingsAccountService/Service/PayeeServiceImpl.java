@@ -5,7 +5,7 @@ import com.tek.trp.savingsAccount.SavingsAccountService.Customer.Customer;
 import com.tek.trp.savingsAccount.SavingsAccountService.DAO.PayeeDao;
 import com.tek.trp.savingsAccount.SavingsAccountService.Entity.Payee;
 import com.tek.trp.savingsAccount.SavingsAccountService.Exception.PayeeNotFoundException;
-import com.tek.trp.savingsAccount.SavingsAccountService.Utilities.ExceptionToJson;
+import com.tek.trp.savingsAccount.SavingsAccountService.Utilities.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,10 +43,10 @@ public class PayeeServiceImpl implements PayeeService {
             if (pl.size() != 0)
                 payeeList = pl;
             else
-                throw new PayeeNotFoundException(ExceptionToJson.exceptionToJsonConverter(cid, "There is no payee associated with your Customer Id  "));
+                throw new PayeeNotFoundException(ExceptionUtils.exceptionToJsonConverter(cid, "There is no payee associated with your Customer Id  "));
 
         } catch (Exception e) {
-            throw new PayeeNotFoundException(ExceptionToJson.exceptionToJsonConverter(cid, "Payee Could not be found. Please Try again Later!"));
+            throw new PayeeNotFoundException(ExceptionUtils.exceptionToJsonConverter(cid, "Payee Could not be found. Please Try again Later!"));
         }
         return payeeList;
     }
@@ -60,9 +60,9 @@ public class PayeeServiceImpl implements PayeeService {
     }
 
     public Payee updatePayee(int id, Payee requestPayee) throws PayeeNotFoundException {
-        Payee payee = payeeDao.findById(id).orElseThrow(() -> new PayeeNotFoundException(ExceptionToJson.exceptionToJsonConverter(id, payeeNotFoundMessage)));
+        Payee payee = payeeDao.findById(id).orElseThrow(() -> new PayeeNotFoundException(ExceptionUtils.exceptionToJsonConverter(id, payeeNotFoundMessage)));
         if (!(requestPayee.getPayeeId() == id))
-            throw new PayeeNotFoundException(ExceptionToJson.exceptionToJsonConverter(id, payeeNotFoundMessage));
+            throw new PayeeNotFoundException(ExceptionUtils.exceptionToJsonConverter(id, payeeNotFoundMessage));
 
         payeeDao.save(requestPayee);
         return payeeDao.findById((payee.getPayeeId())).get();
@@ -73,7 +73,7 @@ public class PayeeServiceImpl implements PayeeService {
         if (payee.isPresent()) {
             payeeDao.delete(payee.get());
         } else {
-            throw new PayeeNotFoundException(ExceptionToJson.exceptionToJsonConverter(id, payeeNotFoundMessage));
+            throw new PayeeNotFoundException(ExceptionUtils.exceptionToJsonConverter(id, payeeNotFoundMessage));
         }
     }
 }
