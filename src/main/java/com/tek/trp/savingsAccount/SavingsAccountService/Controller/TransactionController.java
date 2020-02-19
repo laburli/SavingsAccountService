@@ -39,16 +39,10 @@ public class TransactionController {
     }
 
     //expects /transaction/{cid}?pid = .....
-    @GetMapping("/{cid}")
-    public List<Transaction> getTransactionsByCustomerIdAndPayeeId(@PathVariable int cid, @RequestParam int pid) throws CustNotFoundException, TransactionNotFoundException, PayeeNotFoundException {
+    @GetMapping("/{cid}/{pid}")
+    public List<Transaction> getTransactionsByCustomerIdAndPayeeId(@PathVariable int cid, @PathVariable int pid) throws CustNotFoundException, TransactionNotFoundException, PayeeNotFoundException {
         return transactionService.findTransactionsByCustomerIdAndPayeeId(cid, pid);
     }
-
-    //expects /transaction/{cid}/viewCreditDebitSum/?startDate = ..... & endDate = .....
-//    @GetMapping("/{cid}/viewCreditDebitSum/")
-//    public String viewCreditDebitSum(@PathVariable int cid, @RequestParam String startDate, @RequestParam String endDate) throws CustNotFoundException, DateTimeParseException {
-//         return transactionService.calculateCreditDebitSum(cid,startDate,endDate);
-//    }
 
 
     @GetMapping("/viewCreditDebitSum")

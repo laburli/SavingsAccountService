@@ -10,12 +10,12 @@ import com.tek.trp.savingsAccount.SavingsAccountService.Exception.TransactionNot
 import com.tek.trp.savingsAccount.SavingsAccountService.Utilities.ExceptionUtils;
 import com.tek.trp.savingsAccount.SavingsAccountService.Utilities.creditDebitRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +27,9 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Autowired
     PayeeService payeeService;
+
+    @Autowired
+    RestTemplate rs;
 
     public List<Transaction> findAllTransactionsByCustomerId(int cid) throws TransactionNotFoundException, CustNotFoundException {
         List<Transaction> Customer = transactionDao.findByCustomerId(cid);
@@ -64,7 +67,7 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         List<Transaction> transactionList = transactionDao.findByCustomerIdAndPayeeId(cid, pid);
-        if (transactionList.isEmpty()) {
+        if (transactionList.size() == 0) {
             throw new TransactionNotFoundException(ExceptionUtils.exceptionToJsonConverter(cid, "There is no Transaction associated with your Customer Id & Payee Id"));
         }
         return transactionList;
@@ -74,6 +77,8 @@ public class TransactionServiceImpl implements TransactionService {
 
         int payeeId = transaction.getPayeeId();
         int cid = transaction.getCustomerId();
+
+        ResponseEntity<Payee> pay = rs.getForEntity("http://localhost:8080/payee/?pid=" + payeeId, Payee.class);
 
         List<Transaction> Customer = transactionDao.findByCustomerId(cid);
         if (Customer.isEmpty()) {
@@ -116,9 +121,8 @@ public class TransactionServiceImpl implements TransactionService {
 
     public String CalculateSum(creditDebitRequestDTO creditDebitRequestDTO) throws CustNotFoundException {
         int id = creditDebitRequestDTO.getCustomerId();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        LocalDateTime startDate = LocalDate.parse(String.valueOf(creditDebitRequestDTO.getStartDate()), formatter).atStartOfDay();
-        LocalDateTime endDate = LocalDate.parse(String.valueOf(creditDebitRequestDTO.getEndDate()), formatter).atStartOfDay();
+        LocalDateTime startDate = creditDebitRequestDTO.getStartDate();
+        LocalDateTime endDate = creditDebitRequestDTO.getEndDate();
 
         List<Transaction> Customer = transactionDao.findByCustomerId(id);
         if (Customer.isEmpty()) {

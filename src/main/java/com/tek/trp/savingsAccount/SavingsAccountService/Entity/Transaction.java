@@ -1,5 +1,8 @@
 package com.tek.trp.savingsAccount.SavingsAccountService.Entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -44,6 +47,8 @@ public class Transaction {
     @Column(name = "payeeBankAddress")
     private String payeeBankAddress;
     @Column(name = "transactionTime")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss:SSS", iso = DateTimeFormat.ISO.DATE_TIME)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS")
     private LocalDateTime transactionTime;
 
     public Transaction() {
