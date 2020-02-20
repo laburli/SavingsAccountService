@@ -44,10 +44,10 @@ public class PayeeServiceImpl implements PayeeService {
     }
 
     public Payee addPayee(Payee payee) throws CustNotFoundException {
-        int cid = payee.getCustomerId();
-        List<Payee> pl = payeeDao.findByCustomerId(cid);
-        if (pl.size() == 0)
-            throw new CustNotFoundException(ExceptionUtils.exceptionToJsonConverter(cid, "Customer Id Not found. Could Not Add Payee!"));
+//        int cid = payee.getCustomerId();
+//        List<Payee> pl = payeeDao.findByCustomerId(cid);
+//        if (pl.size() == 0)
+//            throw new CustNotFoundException(ExceptionUtils.exceptionToJsonConverter(cid, "Customer Id Not found. Could Not Add Payee!"));
 
         payeeDao.save(payee);
         return payeeDao.findById(payee.getPayeeId()).get();
