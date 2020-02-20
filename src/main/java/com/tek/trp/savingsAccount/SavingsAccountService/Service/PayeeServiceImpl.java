@@ -44,6 +44,7 @@ public class PayeeServiceImpl implements PayeeService {
     }
 
     public Payee addPayee(Payee payee) throws CustNotFoundException {
+        //        Todo Check if Customer Exists or Not
 //        int cid = payee.getCustomerId();
 //        List<Payee> pl = payeeDao.findByCustomerId(cid);
 //        if (pl.size() == 0)

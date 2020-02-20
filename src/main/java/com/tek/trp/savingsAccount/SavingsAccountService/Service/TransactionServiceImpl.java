@@ -75,11 +75,11 @@ public class TransactionServiceImpl implements TransactionService {
 
     public Transaction addTransaction(Transaction transaction) throws IncompleteTransactionException, PayeeNotFoundException, CustNotFoundException {
 
-        int payeeId = transaction.getPayeeId();
         int cid = transaction.getCustomerId();
 
         // Todo check if Customer Id is present & verify if payee is present or not for that customerId
-        ResponseEntity<Payee> pay = rs.getForEntity("http://localhost:8080/payee/?pid=" + payeeId, Payee.class);
+//        int payeeId = transaction.getPayeeId();
+//        ResponseEntity<Payee> pay = rs.getForEntity("http://localhost:8080/payee/?pid=" + payeeId, Payee.class);
 
 
 //        List<Transaction> Customer = transactionDao.findByCustomerId(cid);
