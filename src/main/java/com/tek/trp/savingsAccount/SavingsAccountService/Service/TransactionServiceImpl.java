@@ -78,22 +78,23 @@ public class TransactionServiceImpl implements TransactionService {
         int payeeId = transaction.getPayeeId();
         int cid = transaction.getCustomerId();
 
+        // Todo check if Customer Id is present & verify if payee is present or not for that customerId
         ResponseEntity<Payee> pay = rs.getForEntity("http://localhost:8080/payee/?pid=" + payeeId, Payee.class);
 
-        List<Transaction> Customer = transactionDao.findByCustomerId(cid);
-        if (Customer.isEmpty()) {
-            throw new CustNotFoundException(ExceptionUtils.exceptionToJsonConverter(cid, "There is no Customer with this id."));
-        }
 
-        List<Payee> payee = payeeService.getAllPayeesByCustomerId(transaction.getCustomerId());
-        Payee p = payee.stream()
-                .filter(payee1 -> payeeId == payee1.getPayeeId())
-                .findAny()
-                .orElse(null);
-
-        if (p == null) {
-            throw new PayeeNotFoundException(ExceptionUtils.exceptionToJsonConverter(cid, "Payee Not Found ! Transaction Incomplete."));
-        }
+//        List<Transaction> Customer = transactionDao.findByCustomerId(cid);
+//        if (Customer.isEmpty()) {
+//            throw new CustNotFoundException(ExceptionUtils.exceptionToJsonConverter(cid, "There is no Customer with this id."));
+//        }
+//        List<Payee> payee = payeeService.getAllPayeesByCustomerId(transaction.getCustomerId());
+//        Payee p = payee.stream()
+//                .filter(payee1 -> payeeId == payee1.getPayeeId())
+//                .findAny()
+//                .orElse(null);
+//
+//        if (p == null) {
+//            throw new PayeeNotFoundException(ExceptionUtils.exceptionToJsonConverter(cid, "Payee Not Found ! Transaction Incomplete."));
+//        }
 
         double txnAmt = transaction.getTransactionAmount();
         double avlBal = transaction.getAvailableBalance();
@@ -104,7 +105,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         //Checking Low Balance Exception Condition
         if (transaction.getTransactionType().toLowerCase().trim().equals("debit")) {
-            if (avlBal < txnAmt) {
+            if ((avlBal + 1000) < txnAmt) {
                 throw new IncompleteTransactionException(ExceptionUtils.exceptionToJsonConverter(cid, "Low Balance! Transaction Can't Be completed. "));
             } else {
                 transaction.setAvailableBalance(avlBal - txnAmt);
@@ -123,17 +124,17 @@ public class TransactionServiceImpl implements TransactionService {
         int id = creditDebitRequestDTO.getCustomerId();
         LocalDateTime startDate = creditDebitRequestDTO.getStartDate();
         LocalDateTime endDate = creditDebitRequestDTO.getEndDate();
+//        Todo Check if Customer Exists or Not
+//        List<Transaction> Customer = transactionDao.findByCustomerId(id);
+//        if (Customer.isEmpty()) {
+//            throw new CustNotFoundException(ExceptionUtils.exceptionToJsonConverter(id, "There is no customer with this id"));
+//        } else {
 
-        List<Transaction> Customer = transactionDao.findByCustomerId(id);
-        if (Customer.isEmpty()) {
-            throw new CustNotFoundException(ExceptionUtils.exceptionToJsonConverter(id, "There is no customer with this id"));
-        } else {
-
-            int debitsum = DebitSum(id, startDate, endDate, "Debit");
-            int creditsum = CreditSum(id, startDate, endDate, "Credit");
-            String response = "{\"customerId\" : " + id + ",\"debitSum\" : " + debitsum + ",\"creditSum\" : " + creditsum + "}";
+            int debitSum = DebitSum(id, startDate, endDate, "Debit");
+            int creditSum = CreditSum(id, startDate, endDate, "Credit");
+            String response = "{\"customerId\" : " + id + ",\"debitSum\" : " + debitSum + ",\"creditSum\" : " + creditSum + "}";
             return response;
-        }
+
     }
 
     private int CreditSum(int id, LocalDateTime start, LocalDateTime end, String transactiontype) {
@@ -162,11 +163,11 @@ public class TransactionServiceImpl implements TransactionService {
         LocalDateTime startDate = creditDebitRequestDTO.getStartDate();
         LocalDateTime endDate = creditDebitRequestDTO.getEndDate().plusDays(1);
 
-        List<Transaction> customer = transactionDao.findByCustomerId(id);
-
-        if (customer.isEmpty()) {
-            throw new CustNotFoundException(ExceptionUtils.exceptionToJsonConverter(id, "There is no customer with this id"));
-        } else {
+//        Todo Check if Customer Exists or Not
+//        List<Transaction> customer = transactionDao.findByCustomerId(id);
+//        if (customer.isEmpty()) {
+//            throw new CustNotFoundException(ExceptionUtils.exceptionToJsonConverter(id, "There is no customer with this id"));
+//        } else {
 
             List<Transaction> transactionList = transactionDao.getViewStatement(id, startDate, endDate);
             if (transactionList.isEmpty()) {
@@ -179,5 +180,4 @@ public class TransactionServiceImpl implements TransactionService {
             }
             return transactionList;
         }
-    }
 }

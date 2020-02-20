@@ -1,5 +1,8 @@
 package com.tek.trp.savingsAccount.SavingsAccountService.Utilities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
@@ -7,6 +10,8 @@ public class creditDebitRequestDTO {
     @NotNull(message = "Please provide Start Date")
     private LocalDateTime startDate;
     @NotNull(message = "Please provide End Date")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss:SSS", iso = DateTimeFormat.ISO.DATE_TIME)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS")
     private LocalDateTime endDate;
     @NotNull(message = "Please provide CustomerID ")
     private int customerId;
