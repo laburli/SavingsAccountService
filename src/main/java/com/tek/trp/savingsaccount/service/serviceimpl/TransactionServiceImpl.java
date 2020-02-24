@@ -134,19 +134,16 @@ public class TransactionServiceImpl implements TransactionService {
 
         double avlBal = getBalance(transactionRequestDTO.getCustomerAccountNumber());
 
-        if (avlBal < minBal) {
-            throw new IncompleteTransactionException(cid, LOW_BAL + minBal);
-        }
-
-        //Checking Low Balance exception Condition
-        if (transactionType.equalsIgnoreCase("debit")) {
-            if ((avlBal + minBal) <= txnAmt) {
+        if (transactionType.equalsIgnoreCase("credit")) {
+            transaction.setAvailableBalance(avlBal + txnAmt);
+        } else if (transactionType.equalsIgnoreCase("debit")) {
+            if (avlBal < minBal) {
+                throw new IncompleteTransactionException(cid, LOW_BAL + minBal);
+            } else if ((avlBal + minBal) <= txnAmt) {
                 throw new IncompleteTransactionException(cid, LOW_BAL + minBal);
             } else {
                 transaction.setAvailableBalance(avlBal - txnAmt);
             }
-        } else if (transactionType.equalsIgnoreCase("credit")) {
-            transaction.setAvailableBalance(avlBal + txnAmt);
         } else {
             throw new IncompleteTransactionException(cid, INVALID_TRANS_TYPE);
         }
