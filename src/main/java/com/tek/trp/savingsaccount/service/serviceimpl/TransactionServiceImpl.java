@@ -144,6 +144,15 @@ public class TransactionServiceImpl implements TransactionService {
             } else {
                 transaction.setAvailableBalance(avlBal - txnAmt);
             }
+//            if(payee.getPayeeBankIFSC().contains("TRPA")){
+//                TransactionRequestDTO creditTransReqDTO = new TransactionRequestDTO();
+//                creditTransReqDTO.setTransactionType("Credit");
+//                creditTransReqDTO.setTransactionAmount(txnAmt);
+//                creditTransReqDTO.setCustomerAccountNumber(payee.getPayeeAccountNumber());
+//                creditTransReqDTO.setPayeeId();
+//                creditTransReqDTO.setCustomerId();
+//                addTransaction(creditTransReqDTO);
+//            }
         } else {
             throw new IncompleteTransactionException(cid, INVALID_TRANS_TYPE);
         }

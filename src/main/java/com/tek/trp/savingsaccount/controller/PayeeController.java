@@ -14,6 +14,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
+@CrossOrigin("*")
 @RequestMapping(path = "/payee", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PayeeController {
     @Autowired

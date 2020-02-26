@@ -17,6 +17,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
+@CrossOrigin("*")
 @RequestMapping(path = "/transaction", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TransactionController {
 
@@ -51,18 +52,18 @@ public class TransactionController {
     }
 
 
-    @GetMapping("/viewCreditDebitSum")
+    @PostMapping("/viewCreditDebitSum")
     public String viewCreditDebitsum(@Valid @RequestBody CreditDebitRequestDTO creditDebitRequestDTO) throws CustomerNotFoundException {
         return transactionService.calculateSum(creditDebitRequestDTO);
 
     }
 
-    @GetMapping("/viewStatement")
+    @PostMapping("/viewStatement")
     public List<Transaction> viewStatements(@Valid @RequestBody CreditDebitRequestDTO creditDebitRequestDTO) throws CustomerNotFoundException, TransactionNotFoundException {
         return transactionService.getStatement(creditDebitRequestDTO);
     }
 
-    @GetMapping("/viewStatement/{accNum}")
+    @PostMapping("/viewStatement/{accNum}")
     public List<Transaction> viewStatementsByAccount(@PathVariable String accNum, @Valid @RequestBody CreditDebitRequestDTO creditDebitRequestDTO) throws CustomerNotFoundException, TransactionNotFoundException {
         return transactionService.getStatementByAccount(accNum, creditDebitRequestDTO);
     }
