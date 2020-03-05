@@ -19,7 +19,6 @@ public class PayeeRequestDTO {
     @NotNull(message = "Payee nickname Can't be null")
     private String nickName;
     @NotNull(message = "Please provide Payee Account Number ")
-    @Pattern(regexp = patternAccNum, message = "Invalid Account Number")
     private String payeeAccountNumber;
     @NotNull(message = "Please provide Payee Bank IFSC Code ")
     @Pattern(regexp = patternIFSC, message = "Invalid IFSC Code")
