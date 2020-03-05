@@ -30,9 +30,10 @@ public class PayeeServiceImpl implements PayeeService {
 
     private boolean doesCustomerExist(String cid) {
         // To Check if Customer Exists or Not
-        ResponseEntity<String> custResponseEntity = rs.getForEntity(customerServiceURL + cid, String.class);
-        String cust = custResponseEntity.getBody();
-        return cust.toLowerCase().trim().equals("true");
+//        ResponseEntity<String> custResponseEntity = rs.getForEntity(customerServiceURL + cid, String.class);
+//        String cust = custResponseEntity.getBody();
+//        return cust.toLowerCase().trim().equals("true");
+        return true;
     }
 
     @Override
