@@ -29,15 +29,13 @@ public class PayeeServiceImpl implements PayeeService {
     private String customerServiceURL = "http://localhost:6060/customer-service/api/";
 
     private boolean doesCustomerExist(String cid) {
-        // To Check if Customer Exists or Not
-//        ResponseEntity<String> custResponseEntity = rs.getForEntity(customerServiceURL + cid, String.class);
-//        String cust = custResponseEntity.getBody();
-//        return cust.toLowerCase().trim().equals("true");
-        return true;
+        ResponseEntity<String> custResponseEntity = rs.getForEntity(customerServiceURL + cid, String.class);
+        String cust = custResponseEntity.getBody();
+        return cust.toLowerCase().trim().equals("true");
     }
 
     @Override
-    public Payee getPayeeByPayeeId(int pid) throws PayeeNotFoundException {
+    public Payee getPayeeByPayeeId(int pid) {
         Optional<Payee> payee = payeeDao.findById(pid);
         if (!payee.isPresent()) {
             throw new PayeeNotFoundException(pid, PAYEE_NOT_FOUND);
@@ -46,7 +44,7 @@ public class PayeeServiceImpl implements PayeeService {
     }
 
     @Override
-    public List<Payee> getAllPayeesByCustomerId(String cid) throws PayeeNotFoundException, CustomerNotFoundException {
+    public List<Payee> getAllPayeesByCustomerId(String cid) {
         if (!doesCustomerExist(cid))
             throw new CustomerNotFoundException(cid, CUST_NOT_FOUND);
 
@@ -62,7 +60,7 @@ public class PayeeServiceImpl implements PayeeService {
     }
 
     @Override
-    public Payee getPayeeByCustomerIdAndPAN(String cid, String payeeAccNum) throws PayeeNotFoundException, CustomerNotFoundException {
+    public Payee getPayeeByCustomerIdAndPAN(String cid, String payeeAccNum) {
         if (!doesCustomerExist(cid))
             throw new CustomerNotFoundException(cid, CUST_NOT_FOUND);
 
@@ -76,7 +74,7 @@ public class PayeeServiceImpl implements PayeeService {
     }
 
     @Override
-    public String isPayeeActive(int id) throws PayeeNotFoundException {
+    public String isPayeeActive(int id) {
         Payee payee = getPayeeByPayeeId(id);
         if (payee.getPayeeStatus().toLowerCase().trim().equals("active"))
             return "True";
@@ -85,7 +83,7 @@ public class PayeeServiceImpl implements PayeeService {
     }
 
     @Override
-    public Payee addPayee(PayeeRequestDTO payeeRequestDTO) throws CustomerNotFoundException {
+    public Payee addPayee(PayeeRequestDTO payeeRequestDTO) {
 
         String cid = payeeRequestDTO.getCustomerId();
         if (!doesCustomerExist(cid))
@@ -106,8 +104,7 @@ public class PayeeServiceImpl implements PayeeService {
     }
 
     @Override
-    public Payee updatePayee(int id, PayeeRequestDTO payeeRequestDTO) throws PayeeNotFoundException, CustomerNotFoundException {
-        // To Check if Payee Exists or Not
+    public Payee updatePayee(int id, PayeeRequestDTO payeeRequestDTO) {
         Payee payee = payeeDao.findById(id).orElseThrow(() -> new PayeeNotFoundException(id, PAYEE_NOT_FOUND));
 
         String cid = payeeRequestDTO.getCustomerId();
@@ -127,7 +124,7 @@ public class PayeeServiceImpl implements PayeeService {
     }
 
     @Override
-    public Payee activatePayee(int id) throws PayeeNotFoundException {
+    public Payee activatePayee(int id) {
         Payee payee = getPayeeByPayeeId(id);
         payee.setPayeeStatus("Active");
         payeeDao.save(payee);
@@ -135,7 +132,7 @@ public class PayeeServiceImpl implements PayeeService {
     }
 
     @Override
-    public void deletePayee(int id) throws PayeeNotFoundException {
+    public void deletePayee(int id) {
         Optional<Payee> payee = payeeDao.findById(id);
         if (payee.isPresent()) {
             payeeDao.delete(payee.get());

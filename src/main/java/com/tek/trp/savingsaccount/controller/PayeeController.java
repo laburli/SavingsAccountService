@@ -2,8 +2,6 @@ package com.tek.trp.savingsaccount.controller;
 
 import com.tek.trp.savingsaccount.dto.PayeeRequestDTO;
 import com.tek.trp.savingsaccount.entity.Payee;
-import com.tek.trp.savingsaccount.exception.CustomerNotFoundException;
-import com.tek.trp.savingsaccount.exception.PayeeNotFoundException;
 import com.tek.trp.savingsaccount.service.PayeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,50 +12,51 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@CrossOrigin("*")
+@CrossOrigin(allowedHeaders = "*",
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS})
 @RequestMapping(path = "/payee", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PayeeController {
     @Autowired
     PayeeService payeeService;
 
     @PostMapping("/")
-    public Payee savePayee(@Valid @RequestBody PayeeRequestDTO payeeRequestDTO) throws CustomerNotFoundException {
+    public Payee savePayee(@Valid @RequestBody PayeeRequestDTO payeeRequestDTO) {
         return payeeService.addPayee(payeeRequestDTO);
     }
 
     @GetMapping("/")
-    public Payee getPayeeByPayeeId(@RequestParam int pid) throws PayeeNotFoundException {
+    public Payee getPayeeByPayeeId(@RequestParam int pid) {
         return payeeService.getPayeeByPayeeId(pid);
     }
 
     @GetMapping("/{cid}")
-    public List<Payee> getAllPayeesByCustomerId(@PathVariable String cid) throws PayeeNotFoundException, CustomerNotFoundException {
+    public List<Payee> getAllPayeesByCustomerId(@PathVariable String cid) {
         return payeeService.getAllPayeesByCustomerId(cid);
     }
 
     @GetMapping("/{cid}/{payeeAccNum}")
-    public Payee getPayeeByCustomerIdAndPAN(@PathVariable String cid, @PathVariable String payeeAccNum) throws PayeeNotFoundException, CustomerNotFoundException {
+    public Payee getPayeeByCustomerIdAndPAN(@PathVariable String cid, @PathVariable String payeeAccNum) {
         return payeeService.getPayeeByCustomerIdAndPAN(cid, payeeAccNum);
     }
 
     @GetMapping("/isActive/{id}")
-    public String ifPayeeIsActive(@PathVariable int id) throws PayeeNotFoundException {
+    public String ifPayeeIsActive(@PathVariable int id) {
         return payeeService.isPayeeActive(id);
     }
 
     @PutMapping("/{id}")
-    public Payee updatePayee(@PathVariable int id, @Valid @RequestBody PayeeRequestDTO payeeRequestDTO) throws PayeeNotFoundException, CustomerNotFoundException {
+    public Payee updatePayee(@PathVariable int id, @Valid @RequestBody PayeeRequestDTO payeeRequestDTO) {
         return payeeService.updatePayee(id, payeeRequestDTO);
 
     }
 
     @PutMapping("/activate/{id}")
-    public Payee activatePayee(@PathVariable int id) throws PayeeNotFoundException {
+    public Payee activatePayee(@PathVariable int id) {
         return payeeService.activatePayee(id);
     }
 
     @DeleteMapping("/{id}")
-    public HttpStatus deletePayee(@PathVariable int id) throws PayeeNotFoundException {
+    public HttpStatus deletePayee(@PathVariable int id) {
         this.payeeService.deletePayee(id);
         return HttpStatus.OK;
     }
