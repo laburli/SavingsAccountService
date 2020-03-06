@@ -33,18 +33,16 @@ public class TransactionServiceImpl implements TransactionService {
     RestTemplate rs;
 
     private String customerServiceURL = "http://localhost:6060/customer-service/api/";
-
+    private String payeeServiceURL = "http://localhost:8090/payee/";
 
     private boolean doesCustomerExist(String cid) {
-        // To Check if Customer Exists or Not
-//        ResponseEntity<String> custResponseEntity = rs.getForEntity(customerServiceURL + cid, String.class);
-//        String cust = custResponseEntity.getBody();
-//        return cust.toLowerCase().trim().equals("true");
-        return true;
+        ResponseEntity<String> custResponseEntity = rs.getForEntity(customerServiceURL + cid, String.class);
+        String cust = custResponseEntity.getBody();
+        return cust.toLowerCase().trim().equals("true");
     }
 
     @Override
-    public List<Transaction> findAllTransactionsByCustomerId(String cid) throws TransactionNotFoundException, CustomerNotFoundException {
+    public List<Transaction> findAllTransactionsByCustomerId(String cid) {
         if (!doesCustomerExist(cid))
             throw new CustomerNotFoundException(cid, CUST_NOT_FOUND);
 
@@ -56,7 +54,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Transaction findTransactionByTransactionId(int tid) throws TransactionNotFoundException {
+    public Transaction findTransactionByTransactionId(int tid) {
         Optional<Transaction> transaction = transactionDao.findById(tid);
         if (transaction.isPresent()) {
             return transaction.get();
@@ -66,12 +64,12 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<Transaction> findTransactionsByCustomerIdAndPayeeId(String cid, int pid) throws TransactionNotFoundException, CustomerNotFoundException, PayeeNotFoundException {
+    public List<Transaction> findTransactionsByCustomerIdAndPayeeId(String cid, int pid) {
         if (!doesCustomerExist(cid))
             throw new CustomerNotFoundException(cid, CUST_NOT_FOUND);
 
         // To Check if Payee Exists or Not
-        ResponseEntity<Payee> payeeResponseEntity = rs.getForEntity("http://localhost:8080/payee/?pid=" + pid, Payee.class);
+        ResponseEntity<Payee> payeeResponseEntity = rs.getForEntity(payeeServiceURL+"?pid=" + pid, Payee.class);
         Payee payee = payeeResponseEntity.getBody();
         if (payee == null)
             throw new PayeeNotFoundException(pid, PAYEE_NOT_FOUND);
@@ -94,7 +92,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Transaction addTransaction(TransactionRequestDTO transactionRequestDTO) throws IncompleteTransactionException, PayeeNotFoundException, CustomerNotFoundException {
+    public Transaction addTransaction(TransactionRequestDTO transactionRequestDTO) {
         double minBal = 1000.0;
 
         Transaction transaction = new Transaction();
@@ -110,7 +108,7 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         // To verify if payee is present & active or not for that customerId
-        ResponseEntity<Payee[]> payeeListResponseEntity = rs.getForEntity("http://localhost:8080/payee/" + cid, Payee[].class);
+        ResponseEntity<Payee[]> payeeListResponseEntity = rs.getForEntity(payeeServiceURL + cid, Payee[].class);
         List<Payee> payeeList = Arrays.asList(payeeListResponseEntity.getBody());
         Payee payee = payeeList.stream()
                 .filter(payee1 -> payeeId == payee1.getPayeeId())
@@ -128,7 +126,7 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         String transactionType = transactionRequestDTO.getTransactionType();
-        transaction.setTransactionType(transactionType);
+        transaction.setTransactionType(transactionType.toUpperCase());
 
         double txnAmt = transactionRequestDTO.getTransactionAmount();
         transaction.setTransactionAmount(txnAmt);
@@ -145,15 +143,6 @@ public class TransactionServiceImpl implements TransactionService {
             } else {
                 transaction.setAvailableBalance(avlBal - txnAmt);
             }
-//            if(payee.getPayeeBankIFSC().contains("TRPA")){
-//                TransactionRequestDTO creditTransReqDTO = new TransactionRequestDTO();
-//                creditTransReqDTO.setTransactionType("Credit");
-//                creditTransReqDTO.setTransactionAmount(txnAmt);
-//                creditTransReqDTO.setCustomerAccountNumber(payee.getPayeeAccountNumber());
-//                creditTransReqDTO.setPayeeId();
-//                creditTransReqDTO.setCustomerId();
-//                addTransaction(creditTransReqDTO);
-//            }
         } else {
             throw new IncompleteTransactionException(cid, INVALID_TRANS_TYPE);
         }
@@ -166,7 +155,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public String calculateSum(CreditDebitRequestDTO creditDebitRequestDTO) throws CustomerNotFoundException {
+    public String calculateSum(CreditDebitRequestDTO creditDebitRequestDTO) {
         String cid = creditDebitRequestDTO.getCustomerId();
         LocalDate startDate = creditDebitRequestDTO.getStartDate();
         LocalDate endDate = creditDebitRequestDTO.getEndDate();
@@ -174,8 +163,8 @@ public class TransactionServiceImpl implements TransactionService {
         if (!doesCustomerExist(cid))
             throw new CustomerNotFoundException(cid, CUST_NOT_FOUND);
 
-        int debitSum = debitSum(cid, startDate, endDate, "Debit");
-        int creditSum = creditSum(cid, startDate, endDate, "Credit");
+        int debitSum = debitSum(cid, startDate, endDate, "DEBIT");
+        int creditSum = creditSum(cid, startDate, endDate, "CREDIT");
         return "{\"customerId\" : " + cid + ",\"debitSum\" : " + debitSum + ",\"creditSum\" : " + creditSum + "}";
 
     }
@@ -200,7 +189,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<Transaction> getStatement(CreditDebitRequestDTO creditDebitRequestDTO) throws CustomerNotFoundException, TransactionNotFoundException {
+    public List<Transaction> getStatement(CreditDebitRequestDTO creditDebitRequestDTO) {
 
         String cid = creditDebitRequestDTO.getCustomerId();
         LocalDate startDate = creditDebitRequestDTO.getStartDate();
@@ -218,7 +207,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<Transaction> getStatementByAccount(String accNum, CreditDebitRequestDTO creditDebitRequestDTO) throws CustomerNotFoundException, TransactionNotFoundException {
+    public List<Transaction> getStatementByAccount(String accNum, CreditDebitRequestDTO creditDebitRequestDTO) {
         String cid = creditDebitRequestDTO.getCustomerId();
         LocalDate startDate = creditDebitRequestDTO.getStartDate();
         LocalDate endDate = creditDebitRequestDTO.getEndDate().plusDays(1);

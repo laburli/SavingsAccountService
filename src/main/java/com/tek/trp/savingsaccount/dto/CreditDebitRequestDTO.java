@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
 
-import static com.tek.trp.savingsaccount.utilities.ValidatorUtils.patternCustomerId;
+import static com.tek.trp.savingsaccount.utilities.ValidatorUtils.PATTERN_CUST_ID;
 
 @Getter
 public class CreditDebitRequestDTO {
@@ -21,7 +21,7 @@ public class CreditDebitRequestDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate endDate;
     @NotNull(message = "Please provide CustomerID ")
-    @Pattern(regexp = patternCustomerId, message = "Invalid Customer Id Format")
+    @Pattern(regexp = PATTERN_CUST_ID, message = "Invalid Customer Id Format")
     private String customerId;
 }
 
